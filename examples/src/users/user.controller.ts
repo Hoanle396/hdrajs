@@ -1,9 +1,6 @@
 import { authGuard } from '../guard/auth.guard';
-import { ApiOperation, ApiResponse, ApiTags, Controller, Get, Post, UseFilters } from '../../../decorators';
-import { UseGuards } from '../../../decorators/guard.decorator';
-import { Body, Param, Query } from '../../../decorators/request.decorator';
+import { ApiOperation, ApiResponse, ApiTags, Body, Controller, Get, Param, Post, Query, UseFilters, UseGuards } from '../../../decorators';
 import { UserService } from './user.service';
-import { HttpExceptionFilter } from '../filters/http-exception.filter';
 
 export class CreateUserDto {
     name!: string;

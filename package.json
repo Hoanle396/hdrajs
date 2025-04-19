@@ -1,4 +1,14 @@
 {
+  "name": "@hdrajs/server",
+  "version": "1.0.0",
+  "description": "A simple example of a Bun app with TypeScript and Express",
+  "main": "index.ts",
+  "scripts": {
+    "build": "tsc",
+    "start": "bun run build && bun index.js",
+    "dev": "tsc -w & bun index.js",
+    "publish": "bun publish"
+  },
   "dependencies": {
     "@types/swagger-ui-express": "^4.1.8",
     "express": "^5.1.0",
