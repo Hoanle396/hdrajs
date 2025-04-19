@@ -1,63 +1,115 @@
 import express, { Express, Request, Response } from 'express';
 import 'reflect-metadata';
-import { getParameterMetadata, ParamType, resolveDependencies, ROUTES_KEY } from './decorators';
+
+import { JsonObject, serve, setup } from 'swagger-ui-express';
+import { getControllerTags, getParameterMetadata, getSwaggerMetadata, ParamType, resolveDependencies, ROUTES_KEY } from './decorators';
+import { getGuards } from './decorators/guard.decorator';
 
 declare global {
     var controllers: any[];
 }
 
-export function createApp(): Express {
+export type App = {
+    swagger?: {
+        document: JsonObject,
+        path: string
+    }
+    notFoundHandler?: ((req: any, res: any) => void) | null;
+}
+
+export function createApp(options: App): Express {
     const app = express();
     app.use(express.json());
     const controllers = globalThis.controllers || [];
     controllers.forEach((ControllerClass: any) => {
         try {
             const prefix = Reflect.getMetadata('prefix', ControllerClass);
+            const tags = getControllerTags(ControllerClass);
             const instance = new ControllerClass(...resolveDependencies(ControllerClass));
             const routes = Reflect.getMetadata(ROUTES_KEY, ControllerClass) || [];
             routes.forEach((route: any) => {
-                (app as any)[route.method](prefix + route.path, async (req: Request, res: Response) => {
-                    try {
-                        const handler = instance[route.handler];
-                        const params = getParameterMetadata(instance, route.handler);
-                        const args = params.map(param => {
-                            switch (param.type) {
-                                case ParamType.BODY:
-                                    return req.body;
-                                case ParamType.PARAM:
-                                    return req.params[param.name!];
-                                case ParamType.QUERY:
-                                    return param.name ? req.query[param.name!] : req.query;
-                                default:
-                                    return undefined;
-                            }
-                        });
-                        const result = await handler.apply(instance, args);
-                        res.json(result);
-                    } catch (error: any) {
-                        res.status(500).json({ error: error.message });
+                const swaggerMeta = getSwaggerMetadata(instance, route.handler);
+                const params = getParameterMetadata(instance, route.handler);
+
+                if (options?.swagger?.document) {
+                    const path = prefix + route.path;
+                    if (!options.swagger.document.paths[path]) {
+                        options.swagger.document.paths[path] = {};
                     }
-                });
+
+                    options.swagger.document.paths[path][route.method] = {
+                        tags: tags,
+                        ...swaggerMeta,
+                        parameters: params.map(param => {
+                            switch (param.type) {
+                                case ParamType.PARAM:
+                                    return {
+                                        name: param.name,
+                                        in: 'path',
+                                        required: true,
+                                        schema: { type: 'string' }
+                                    };
+                                case ParamType.QUERY:
+                                    return {
+                                        name: param.name,
+                                        in: 'query',
+                                        schema: { type: 'string' }
+                                    };
+                                default:
+                                    return null;
+                            }
+                        }).filter(p => p !== null)
+                    };
+                }
+                const classGuards = getGuards(ControllerClass);
+                const methodGuards = getGuards(instance, route.handler);
+                const guards = [...classGuards, ...methodGuards];
+
+                const handlers = [
+                    ...guards.map(guard => (req: Request, res: Response, next: Function) => guard(req, res, next)),
+                    async (req: Request, res: Response) => {
+                        try {
+                            const handler = instance[route.handler];
+                            const params = getParameterMetadata(instance, route.handler);
+                            const args = params.map(param => {
+                                switch (param.type) {
+                                    case ParamType.BODY:
+                                        return req.body;
+                                    case ParamType.PARAM:
+                                        return req.params[param.name!];
+                                    case ParamType.QUERY:
+                                        return param.name ? req.query[param.name!] : req.query;
+                                    default:
+                                        return undefined;
+                                }
+                            });
+                            const result = await handler.apply(instance, args);
+                            res.json(result);
+                        } catch (error: any) {
+                            res.status(500).json({ error: error.message });
+                        }
+                    }
+                ];
+
+                (app as any)[route.method](prefix + route.path, ...handlers);
             });
         } catch (err) {
             console.error('Error registering controller:', ControllerClass?.name, err);
         }
     });
 
+    if (options.swagger) {
+        const { document, path = '/api-docs' } = options.swagger;
+        app.use(path, serve, setup(document));
+    }
+
     app.use((req: any, res: any) => {
-        if (notFoundHandler) {
-            notFoundHandler(req, res);
+        if (options.notFoundHandler) {
+            options.notFoundHandler(req, res);
         }
         else {
             res.status(404).send('Not Found');
         }
     })
     return app;
-}
-
-
-let notFoundHandler: ((req: any, res: any) => void) | null = null;
-
-export function setNotFoundHandler(handler: (req: any, res: any) => void) {
-    notFoundHandler = handler;
 }

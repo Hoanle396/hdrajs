@@ -1,4 +1,6 @@
-import { All, Controller, Get, Post } from './decorators';
+import { authGuard } from './auth.guard';
+import { ApiOperation, ApiResponse, ApiTags, Controller, Get, Post } from './decorators';
+import { UseGuards } from './decorators/guard.decorator';
 import { Body, Param, Query } from './decorators/request.decorator';
 import { UserService } from './user.service';
 
@@ -7,20 +9,69 @@ export class CreateUserDto {
 }
 
 @Controller('/users')
+@ApiTags('Users')
 export class UserController {
     constructor(private userService: UserService) { }
 
-    @All('/')
+    @Get('/')
+    @ApiOperation({
+        summary: 'Get all users',
+        description: 'Retrieve a list of all users',
+
+        security: [
+            {
+                bearerAuth: []
+            }
+        ]
+    })
+    @ApiResponse(200, {
+        description: 'List of users retrieved successfully',
+        schema: {
+            type: 'array',
+            items: {
+                type: 'object',
+                properties: {
+                    id: { type: 'number' },
+                    name: { type: 'string' }
+                }
+            }
+        }
+    })
     getAll() {
         return this.userService.findAll();
     }
 
     @Get('/:id')
+    @ApiOperation({
+        summary: 'Get user by ID',
+        description: 'Retrieve a single user by their ID',
+        responses: {
+            '200': {
+                description: 'User found successfully',
+                type: 'object'
+            },
+            '404': {
+                description: 'User not found'
+            }
+        }
+    })
     getUser(@Param('id') id: number, @Query() include?: CreateUserDto) {
         return this.userService.findById(Number(id));
     }
 
     @Post('/')
+    @ApiOperation({
+        summary: 'Create new user',
+        description: 'Create a new user with the provided data',
+        responses: {
+            '201': {
+                description: 'User created successfully',
+                type: 'object',
+                schema: CreateUserDto
+            }
+        }
+    })
+    @UseGuards(authGuard)
     createUser(@Body() user: CreateUserDto) {
         return this.userService.create(user);
     }
