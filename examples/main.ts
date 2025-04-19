@@ -1,7 +1,8 @@
 import { JsonObject } from 'swagger-ui-express';
-import { createApp } from './core';
-import './user.controller';
-import './user.service';
+import { createApp } from '../core';
+import './src/users/user.controller';
+import './src/users/user.service';
+import { HttpExceptionFilter } from './src/filters/http-exception.filter';
 
 const swaggerDoc: JsonObject = {
     openapi: '3.0.0',
@@ -28,7 +29,8 @@ const app = createApp({
         document: swaggerDoc,
         path: '/api-docs'
     },
-    notFoundHandler: (req, res) => res.status(404).json({ message: 'Not Found' })
+    notFoundHandler: (req, res) => res.status(404).json({ message: 'Not Found' }),
+    exception: HttpExceptionFilter
 });
 
 app.listen(4000, () => {

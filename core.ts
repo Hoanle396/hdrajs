@@ -2,11 +2,11 @@ import express, { Express, Request, Response } from 'express';
 import 'reflect-metadata';
 
 import { JsonObject, serve, setup } from 'swagger-ui-express';
-import { getControllerTags, getParameterMetadata, getSwaggerMetadata, ParamType, resolveDependencies, ROUTES_KEY } from './decorators';
-import { getGuards } from './decorators/guard.decorator';
+import { defaultFilter, getControllerTags, getFilters, getGuards, getParameterMetadata, getSwaggerMetadata, HttpException, ParamType, resolveDependencies, ROUTES_KEY } from './decorators';
 
 declare global {
     var controllers: any[];
+    var globalFilters: any[];
 }
 
 export type App = {
@@ -15,6 +15,7 @@ export type App = {
         path: string
     }
     notFoundHandler?: ((req: any, res: any) => void) | null;
+    exception?: (error: Error | HttpException, res: Response) => void;
 }
 
 export function createApp(options: App): Express {
@@ -86,7 +87,13 @@ export function createApp(options: App): Express {
                             const result = await handler.apply(instance, args);
                             res.json(result);
                         } catch (error: any) {
-                            res.status(500).json({ error: error.message });
+                            const globalFilter = options?.exception;
+                            const methodFilters = getFilters(instance, route.handler);
+                            const classFilters = getFilters(ControllerClass);
+
+                            // Priority: method filters > class filters > global filters > default filter
+                            const filter = methodFilters[0] || classFilters[0] || globalFilter || defaultFilter;
+                            filter(error, res);
                         }
                     }
                 ];

@@ -1,5 +1,4 @@
 import { NextFunction, Request, Response } from 'express';
-const JWT_SECRET = 'your-secret-key'; // In production, use environment variables
 
 export interface AuthRequest extends Request {
     user?: any;

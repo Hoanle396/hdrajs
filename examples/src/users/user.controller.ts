@@ -1,8 +1,9 @@
-import { authGuard } from './auth.guard';
-import { ApiOperation, ApiResponse, ApiTags, Controller, Get, Post } from './decorators';
-import { UseGuards } from './decorators/guard.decorator';
-import { Body, Param, Query } from './decorators/request.decorator';
+import { authGuard } from '../guard/auth.guard';
+import { ApiOperation, ApiResponse, ApiTags, Controller, Get, Post, UseFilters } from '../../../decorators';
+import { UseGuards } from '../../../decorators/guard.decorator';
+import { Body, Param, Query } from '../../../decorators/request.decorator';
 import { UserService } from './user.service';
+import { HttpExceptionFilter } from '../filters/http-exception.filter';
 
 export class CreateUserDto {
     name!: string;
@@ -17,12 +18,6 @@ export class UserController {
     @ApiOperation({
         summary: 'Get all users',
         description: 'Retrieve a list of all users',
-
-        security: [
-            {
-                bearerAuth: []
-            }
-        ]
     })
     @ApiResponse(200, {
         description: 'List of users retrieved successfully',
@@ -69,7 +64,12 @@ export class UserController {
                 type: 'object',
                 schema: CreateUserDto
             }
-        }
+        },
+        security: [
+            {
+                bearerAuth: []
+            }
+        ]
     })
     @UseGuards(authGuard)
     createUser(@Body() user: CreateUserDto) {
