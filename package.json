@@ -1,11 +1,11 @@
 {
   "name": "hdrajs",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A simple example of a Bun app with TypeScript and Express",
   "main": "dist/index.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Hoanle396/viet-qr.git"
+    "url": "git+https://github.com/Hoanle396/hdrajs.git"
   },
   "author": "Hoanle396",
   "license": "MIT",
@@ -16,14 +16,14 @@
     "publish": "bun publish"
   },
   "dependencies": {
-    "@types/swagger-ui-express": "^4.1.8",
     "express": "^5.1.0",
     "reflect-metadata": "^0.2.2",
     "swagger-ui-express": "^5.0.1",
     "typescript": "^5.8.3"
   },
   "devDependencies": {
-    "@types/express": "^5.0.1"
+    "@types/express": "^5.0.1",
+    "@types/swagger-ui-express": "^4.1.8"
   },
   "engines": {
     "bun": ">=1.0.0"
