@@ -1,8 +1,14 @@
 {
-  "name": "@hdrajs/server",
+  "name": "hdrajs",
   "version": "1.0.0",
   "description": "A simple example of a Bun app with TypeScript and Express",
-  "main": "index.ts",
+  "main": "dist/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Hoanle396/viet-qr.git"
+  },
+  "author": "Hoanle396",
+  "license": "MIT",
   "scripts": {
     "build": "tsc",
     "start": "bun run build && bun index.js",

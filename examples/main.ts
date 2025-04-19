@@ -7,9 +7,9 @@ import { HttpExceptionFilter } from './src/filters/http-exception.filter';
 const swaggerDoc: JsonObject = {
     openapi: '3.0.0',
     info: {
-        title: 'HRA.js API',
+        title: 'hdra.js API',
         version: '1.0.0',
-        description: 'API documentation for HRA.js framework'
+        description: 'API documentation for hdra.js framework'
     },
     paths: {},
     components: {

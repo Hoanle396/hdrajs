@@ -16,14 +16,14 @@ A lightweight TypeScript-based web framework with built-in dependency injection,
 ## Installation
 
 ```bash
-npm install @hdrajs/server
+npm install hdrajs
 ```
 
 ## Quick Start
 
 ```typescript
 // main.ts
-import { createApp } from '@hdrajs/server';
+import { createApp } from 'hdrajs';
 import './src/users/user.controller';
 import './src/users/user.service';
 
@@ -36,7 +36,7 @@ app.listen(4000, () => {
 
 ```typescript
 // user.controller.ts
-import { Controller, Get, Post, Body, Param,ApiOperation, ApiTags } from '@hdrajs/server';
+import { Controller, Get, Post, Body, Param,ApiOperation, ApiTags } from 'hdrajs';
 
 @Controller('/users')
 @ApiTags('Users')
@@ -99,7 +99,7 @@ app.listen(4000, () => {
 ## Authentication
 
 ```typescript
-import { UseGuards } from '@hdrajs/server';
+import { UseGuards } from 'hdrajs';
 import { authGuard } from './auth.guard';
 
 @Controller('/protected')
@@ -115,7 +115,7 @@ export class ProtectedController {
 ## Exception Handling
 
 ```typescript
-import { UseFilters, HttpExceptionFilter } from '@hdrajs/server';
+import { UseFilters, HttpExceptionFilter } from 'hdrajs';
 
 @Controller('/users')
 @UseFilters(HttpExceptionFilter)
