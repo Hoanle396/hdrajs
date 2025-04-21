@@ -1,10 +1,13 @@
-```markdown
+I'll update the README to reflect the new module-based architecture:
+
+```markdown:d:\Code\hrajs\readme.md
 # HRA.js Framework
 
 A lightweight TypeScript-based web framework with built-in dependency injection, decorators, and Swagger support.
 
 ## Features
 
+- Module-based architecture
 - Decorator-based routing and controllers
 - Built-in dependency injection
 - Parameter decorators (@Body, @Query, @Param)
@@ -22,12 +25,42 @@ npm install hdrajs
 ## Quick Start
 
 ```typescript
+// app.module.ts
+import { Module } from 'hdrajs';
+import { UserController } from './users/user.controller';
+import { UserService } from './users/user.service';
+
+@Module({
+    controllers: [UserController],
+    providers: [UserService]
+})
+export class AppModule {}
+```
+
+```typescript
 // main.ts
 import { createApp } from 'hdrajs';
-import './src/users/user.controller';
-import './src/users/user.service';
+import { AppModule } from './app.module';
 
-const app = createApp();
+const swaggerDoc = {
+    openapi: '3.0.0',
+    info: {
+        title: 'My API',
+        version: '1.0.0',
+        description: 'API documentation'
+    },
+    paths: {},
+    components: {
+        schemas: {}
+    }
+};
+
+const app = createApp(AppModule, {
+    swagger: {
+        document: swaggerDoc,
+        path: '/api-docs'
+    }
+});
 
 app.listen(4000, () => {
     console.log('Server running on http://localhost:4000');
@@ -36,22 +69,39 @@ app.listen(4000, () => {
 
 ```typescript
 // user.controller.ts
-import { Controller, Get, Post, Body, Param,ApiOperation, ApiTags } from 'hdrajs';
+import { Controller, Get, Post, Body, Param } from 'hdrajs';
+import { ApiOperation, ApiTags } from 'hdrajs/swagger';
 
 @Controller('/users')
 @ApiTags('Users')
 export class UserController {
+    constructor(private userService: UserService) {}
+
     @Get('/:id')
     @ApiOperation({ summary: 'Get user by ID' })
     getUser(@Param('id') id: number) {
-        return { id, name: 'John Doe' };
+        return this.userService.findById(id);
     }
 
     @Post('/')
     createUser(@Body() user: any) {
-        return user;
+        return this.userService.create(user);
     }
 }
+```
+
+## Module Structure
+
+```typescript
+// feature.module.ts
+import { Module } from 'hdrajs';
+
+@Module({
+    imports: [OtherModule],      // Import other modules
+    controllers: [Controller1],   // Register controllers
+    providers: [Service1]        // Register services
+})
+export class FeatureModule {}
 ```
 
 ## Swagger
@@ -83,7 +133,7 @@ const swaggerDoc: JsonObject = {
     },
 };
 
-const app = createApp({
+const app = createApp(AppModule,{
     swagger: {
         document: swaggerDoc,
         path: '/api-docs'
@@ -96,49 +146,38 @@ app.listen(4000, () => {
 })
 ```
 
-## Authentication
+## Exception Handling
 
 ```typescript
-import { UseGuards } from 'hdrajs';
-import { authGuard } from './auth.guard';
+// Global exception filter
+const app = createApp(AppModule, {
+    exception: HttpExceptionFilter
+});
 
+// Controller-level filter
+@Controller('/users')
+@UseFilters(CustomExceptionFilter)
+export class UserController {}
+
+// Method-level filter
+@Get('/:id')
+@UseFilters(SpecificExceptionFilter)
+getUser(@Param('id') id: number) {}
+```
+
+## Authentication Guards
+
+```typescript
 @Controller('/protected')
-@UseGuards(authGuard)
+@UseGuards(AuthGuard)
 export class ProtectedController {
     @Get('/')
+    @UseGuards(RoleGuard)
     getData() {
         return { message: 'Protected data' };
     }
 }
 ```
-
-## Exception Handling
-
-```typescript
-import { UseFilters, HttpExceptionFilter } from 'hdrajs';
-
-@Controller('/users')
-@UseFilters(HttpExceptionFilter)
-export class UserController {
-    @Get('/:id')
-    getUser(@Param('id') id: number) {
-        throw new NotFoundException(`User ${id} not found`);
-    }
-}
-```
-
-## Global Exception Filter
-
-```typescript
-const app = createApp({
-    // ... orther config
-    exception: HttpExceptionFilter
-});
-```
-
-## API Documentation
-
-Access Swagger UI at `/api-docs` after starting your application.
 
 ## License
 

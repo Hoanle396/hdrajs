@@ -1,4 +1,4 @@
-import 'reflect-metadata'
+import 'reflect-metadata';
 
 export const ROUTES_KEY = Symbol('routes');
 function createRouteDecorator(method: string) {

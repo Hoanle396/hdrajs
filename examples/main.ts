@@ -1,7 +1,6 @@
 import { JsonObject } from 'swagger-ui-express';
 import { createApp } from '../core';
-import './src/users/user.controller';
-import './src/users/user.service';
+import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './src/filters/http-exception.filter';
 
 const swaggerDoc: JsonObject = {
@@ -24,14 +23,16 @@ const swaggerDoc: JsonObject = {
     },
 };
 
-const app = createApp({
-    swagger: {
-        document: swaggerDoc,
-        path: '/api-docs'
-    },
-    notFoundHandler: (req, res) => res.status(404).json({ message: 'Not Found' }),
-    exception: HttpExceptionFilter
-});
+const app = createApp(
+    AppModule,
+    {
+        swagger: {
+            document: swaggerDoc,
+            path: '/api-docs'
+        },
+        notFoundHandler: (req, res) => res.status(404).json({ message: 'Not Found' }),
+        exception: HttpExceptionFilter
+    });
 
 app.listen(4000, () => {
     console.log('Server running on http://localhost:4000');

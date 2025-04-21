@@ -15,7 +15,7 @@ export function UseGuards(...guards: Function[]) {
 }
 
 export function getGuards(target: any, propertyKey?: string): Function[] {
-    return propertyKey 
+    return propertyKey
         ? Reflect.getMetadata(GUARDS_METADATA, target, propertyKey) || []
         : Reflect.getMetadata(GUARDS_METADATA, target) || [];
 }

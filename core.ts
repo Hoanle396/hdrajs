@@ -2,11 +2,12 @@ import express, { Express, Request, Response } from 'express';
 import 'reflect-metadata';
 
 import { JsonObject, serve, setup } from 'swagger-ui-express';
-import { defaultFilter, getControllerTags, getFilters, getGuards, getParameterMetadata, getSwaggerMetadata, HttpException, ParamType, resolveDependencies, ROUTES_KEY } from './decorators';
+import { defaultFilter, getControllerTags, getFilters, getGuards, getParameterMetadata, getSwaggerMetadata, HttpException, loadModule, ModuleMetadata, ParamType, resolveDependencies, ROUTES_KEY } from './decorators';
 
 declare global {
     var controllers: any[];
     var globalFilters: any[];
+    var providers: any[];
 }
 
 export type App = {
@@ -18,9 +19,21 @@ export type App = {
     exception?: (error: Error | HttpException, res: Response) => void;
 }
 
-export function createApp(options: App): Express {
+export function createApp(module: { new(): any } & { prototype: { [key: string]: any } }, options?: App): Express {
     const app = express();
     app.use(express.json());
+    const metadata: ModuleMetadata = Reflect.getMetadata('module', module) || {};
+    if (metadata.imports) {
+        metadata.imports.forEach(importedModule => loadModule(importedModule));
+    }
+    if (metadata.controllers) {
+        if (!globalThis.controllers) globalThis.controllers = [];
+        globalThis.controllers.push(...metadata.controllers);
+    }
+    if (metadata.providers) {
+        if (!globalThis.providers) globalThis.providers = [];
+        globalThis.providers.push(...metadata.providers);
+    }
     const controllers = globalThis.controllers || [];
     controllers.forEach((ControllerClass: any) => {
         try {
@@ -105,13 +118,13 @@ export function createApp(options: App): Express {
         }
     });
 
-    if (options.swagger) {
-        const { document, path = '/api-docs' } = options.swagger;
+    if (options?.swagger) {
+        const { document, path = '/api-docs' } = options?.swagger;
         app.use(path, serve, setup(document));
     }
 
     app.use((req: any, res: any) => {
-        if (options.notFoundHandler) {
+        if (options?.notFoundHandler) {
             options.notFoundHandler(req, res);
         }
         else {
