@@ -1,7 +1,4 @@
-I'll update the README to reflect the new module-based architecture:
-
-```markdown:d:\Code\hrajs\readme.md
-# HRA.js Framework
+# HDRA.js Framework
 
 A lightweight TypeScript-based web framework with built-in dependency injection, decorators, and Swagger support.
 

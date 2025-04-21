@@ -1,6 +1,6 @@
 {
   "name": "hdrajs",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A simple example of a Bun app with TypeScript and Express",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
