@@ -1,13 +1,26 @@
 {
   "name": "hdrajs",
-  "version": "1.0.3",
-  "description": "A simple example of a Bun app with TypeScript and Express",
+  "version": "1.0.0",
+  "description": "A powerful TypeScript framework with dependency injection, decorators, validation, middleware, and CLI tools (Enhanced Edition)",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "bin": {
+    "hdra": "dist/cli/index.js"
+  },
   "keywords": [
-    "bun",
     "typescript",
-    "express"
+    "framework",
+    "web",
+    "api",
+    "rest",
+    "decorators",
+    "dependency-injection",
+    "validation",
+    "middleware",
+    "swagger",
+    "openapi",
+    "express",
+    "bun"
   ],
   "repository": {
     "type": "git",
@@ -17,20 +30,41 @@
   "license": "MIT",
   "scripts": {
     "build": "tsc",
+    "build:cli": "tsc",
     "start": "bun run build && bun index.js",
-    "dev": "tsc -w & bun index.js"
+    "dev": "tsc -w & bun index.js",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:cov": "jest --coverage",
+    "lint": "eslint src --ext .ts",
+    "lint:fix": "eslint src --ext .ts --fix",
+    "prepublish": "npm run build"
   },
   "dependencies": {
     "express": "^5.1.0",
     "reflect-metadata": "^0.2.2",
     "swagger-ui-express": "^5.0.1",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "commander": "^12.0.0"
   },
   "devDependencies": {
     "@types/express": "^5.0.1",
-    "@types/swagger-ui-express": "^4.1.8"
+    "@types/swagger-ui-express": "^4.1.8",
+    "@types/node": "^20.0.0",
+    "@types/jest": "^29.0.0",
+    "jest": "^29.0.0",
+    "ts-jest": "^29.0.0",
+    "eslint": "^8.0.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0"
   },
   "engines": {
+    "node": ">=16.0.0",
     "bun": ">=1.0.0"
-  }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ]
 }
