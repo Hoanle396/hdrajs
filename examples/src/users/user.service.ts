@@ -1,5 +1,4 @@
-import { Injectable } from '../../../decorators';
-import { NotFoundException } from '../../../decorators/exception.decorator';
+import { Injectable, NotFoundException } from '../../..';
 
 export interface User {
     id: number;

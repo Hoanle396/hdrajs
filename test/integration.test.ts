@@ -1,4 +1,4 @@
-import { createApp } from '../core';
+import { createApp } from '../src/core';
 import { 
     Controller, 
     Get, 

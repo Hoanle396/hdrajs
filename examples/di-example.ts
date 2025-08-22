@@ -1,4 +1,4 @@
-import { Injectable, Controller, Get, Post, Body, Module, createApp, ValidationPipe } from '../index';
+import { Injectable, Controller, Get, Post, Body, Module, createApp, ValidationPipe } from '..';
 
 // 1. Create an Injectable Service
 @Injectable()

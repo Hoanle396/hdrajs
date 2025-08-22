@@ -2,10 +2,10 @@
   "name": "hdrajs",
   "version": "1.0.4",
   "description": "A powerful TypeScript framework with dependency injection, decorators, validation, middleware, and CLI tools (Enhanced Edition)",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "dist/src/index.js",
+  "types": "dist/src/index.d.ts",
   "bin": {
-    "hdra": "dist/cli/index.js"
+    "hdra": "dist/tools/cli/index.js"
   },
   "keywords": [
     "typescript",

@@ -1,4 +1,4 @@
-import { Module } from "../../../decorators";
+import { Module } from "../../..";
 import { UserController } from "./user.controller";
 import { UserService } from "./user.service";
 

@@ -1,29 +1,26 @@
-import { 
-    ApiOperation, 
-    ApiResponse, 
-    ApiTags, 
-    Body, 
-    Controller, 
-    Get, 
-    Param, 
-    Post, 
-    Put,
-    Delete,
-    Query, 
-    UseGuards 
-} from '../../../decorators';
-import { 
-    UseMiddleware, 
-    UseInterceptors, 
-    LoggingInterceptor,
+import {
+    ApiOperation,
+    ApiResponse,
+    ApiTags,
+    Body,
     CacheInterceptor,
-    ValidationPipe,
+    Controller,
+    Delete,
+    Get,
+    LoggingInterceptor,
+    Param,
+    Post,
+    Put,
+    Query,
+    UseGuards,
+    UseInterceptors,
     UsePipes,
+    ValidateEmail,
+    ValidateMinLength,
     ValidateRequired,
     ValidateString,
-    ValidateEmail,
-    ValidateMinLength
-} from '../../../index';
+    ValidationPipe
+} from '../../..';
 import { authGuard } from '../guard/auth.guard';
 import { UserService } from './user.service';
 

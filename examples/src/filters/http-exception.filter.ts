@@ -1,5 +1,5 @@
 import { Response } from 'express';
-import { ExceptionFilter, HttpException } from '../../../decorators';
+import { ExceptionFilter, HttpException } from '../../..';
 
 export const HttpExceptionFilter: ExceptionFilter = (error: Error | HttpException, res: Response) => {
     if ('status' in error) {

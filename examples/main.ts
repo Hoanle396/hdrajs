@@ -1,9 +1,7 @@
 import { JsonObject } from 'swagger-ui-express';
-import { createApp } from '../core';
+import { CorsMiddleware, createApp, LoggerMiddleware, ValidationPipe } from '..';
 import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './src/filters/http-exception.filter';
-import { LoggerMiddleware, CorsMiddleware } from '../middleware';
-import { ValidationPipe } from '../index';
 
 const swaggerDoc: JsonObject = {
     openapi: '3.0.0',
